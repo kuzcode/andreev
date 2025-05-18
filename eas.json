@@ -1,0 +1,33 @@
+{
+  "cli": {
+    "version": ">= 10.2.4",
+    "promptToConfigurePushNotifications": false
+  },
+  "build": {
+    "development": {
+      "developmentClient": true,
+      "distribution": "internal"
+    },
+    "preview": {
+      "distribution": "internal"
+    },
+    "production": {
+      "android": {
+        "image": "latest",
+        "buildType": "apk"
+      },
+      "ios": {
+        "image": "latest"
+      }
+    }
+  },
+  "submit": {
+    "production": {
+      "ios": {
+        "appleId": "1necatiperil@gmail.com",
+        "ascAppId": "6743755342",
+        "appleTeamId": "3VTX77J6GU"
+      }
+    }
+  }
+}
