@@ -1,79 +1,43 @@
 {
   "expo": {
-    "name": "Andreev",
-    "slug": "athlete",
-    "version": "1.1",
+    "name": "sportify",
+    "slug": "sportify",
+    "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/logo.png",
-    "userInterfaceStyle": "dark",
+    "userInterfaceStyle": "light",
     "splash": {
       "image": "./assets/logo.png",
-      "resizeMode": "cover",
-      "backgroundColor": "#fff"
+      "resizeMode": "contain",
+      "backgroundColor": "#ffffff"
     },
-    "scheme": "Athlete",
     "assetBundlePatterns": [
       "**/*"
     ],
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.kuzmin.athlete",
-      "buildNumber": "6",
-      "infoPlist": {
-        "ITSAppUsesNonExemptEncryption": false
-      },
-      "jsEngine": "hermes",
-      "hermes": {
-        "enableHermes": true,
-        "enableDebugger": true
-      }
+      "bundleIdentifier": "com.sportify.app"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/logo.png",
-        "backgroundColor": "#111"
+        "backgroundColor": "#ffffff"
       },
-      "statusBar": {
-        "visible": false,
-        "hidden": true
-      },
-      "package": "com.kuzmin.athlete",
-      "permissions": [
-        "android.permission.ACCESS_COARSE_LOCATION",
-        "android.permission.ACCESS_FINE_LOCATION",
-        "android.permission.RECORD_AUDIO",
-        "android.permission.MODIFY_AUDIO_SETTINGS",
-        "android.permission.DETECT_SCREEN_CAPTURE"
-      ],
-      "jsEngine": "hermes",
-      "hermes": {
-        "enableHermes": true,
-        "enableDebugger": true
-      }
+      "package": "com.sportify.app"
     },
     "web": {
-      "favicon": "./assets/favicon.png"
+      "favicon": "./assets/logo.png"
     },
     "plugins": [
-      "expo-router",
-      "expo-font",
-      "expo-av",
-      "expo-splash-screen"
+      "expo-router"
     ],
     "extra": {
       "router": {
         "origin": false
       },
       "eas": {
-        "projectId": "dc346ca7-4762-445a-8d07-9693d277c1b5"
+        "projectId": "b740a23e-5e63-4a19-8414-17865faeeac0"
       }
-    },
-    "runtimeVersion": {
-      "policy": "appVersion"
-    },
-    "updates": {
-      "url": "https://u.expo.dev/648d23ed-d8b0-494b-8df0-4420d8d8fdff"
-    },
-    "owner": "kuzmin"
+    }
   }
 }

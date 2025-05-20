@@ -4,6 +4,8 @@ import { getMasters, getOrders, updateModel, updateOrder, updateTracker, updateU
 import { useEffect, useState, useRef } from "react";
 import RNPickerSelect from "react-native-picker-select";
 import { FormField } from "../../components";
+import { useGlobalContext } from "../../context/GlobalProvider";
+import { useDetails } from "../../context/DetailsProvider";
 
 const Home = () => {
   const [orders, setOrders] = useState([]);
@@ -15,14 +17,14 @@ const Home = () => {
   const [refreshing, setRefreshing] = useState(false);
   const [phoneNumber, setPhoneNumber] = useState('+7977');
   const [inputValue, setInputValue] = useState('');
-  const [details, setDetails] = useState({
-    visible: 0
-  });
+  const { details, setDetails } = useDetails();
   const [iconUpdateTimer, setIconUpdateTimer] = useState(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [activeTab, setActiveTab] = useState('orders');
   const horizontalScrollRef = useRef(null);
   const width = Dimensions.get('window').width;
+  const global = useGlobalContext();
+  const [user, setUser] = useState(global.user);
 
   const bgs = [
     { title: 'Кр.', bg: '#b61900' },
@@ -610,7 +612,7 @@ const Home = () => {
             </View>
           </ScrollView>
 
-          <View className="absolute bottom-[56px] flex flex-row justify-around rounded-2xl left-4 right-4 py-4 bg-white">
+          <View className="absolute bottom-0 flex flex-row justify-around rounded-2xl left-4 right-4 py-4 bg-white">
             <TouchableOpacity
               onPress={() => { setDetails({ visible: 0 }) }}
             >
@@ -621,7 +623,7 @@ const Home = () => {
             </TouchableOpacity>
 
             <TouchableOpacity
-              onPress={() => { setDetails({ visible: 0 }) }}
+              onPress={() => { router.push('/create') }}
             >
               <Image
                 className='w-10 h-10'
@@ -1366,22 +1368,28 @@ const Home = () => {
             />
           </View>
 
-          {details.models.map((module, index) => (
-            <TouchableOpacity
-              key={index}
-              className="bg-white p-4 rounded-xl mb-4"
-              onPress={() => {
-                setDetails({
-                  visible: 2,
-                  ...module,
-                  order: { title: module.orderTitle }
-                });
-              }}
-            >
-              <Text className="font-pbold text-[18px] mb-2">{module.orderTitle}</Text>
-              <Text className="font-pregular text-[16px]">{module.title}</Text>
-            </TouchableOpacity>
-          ))}
+          {details.models && details.models.length > 0 ? (
+            details.models.map((module, index) => (
+              <TouchableOpacity
+                key={index}
+                className="bg-white p-4 rounded-xl mb-4"
+                onPress={() => {
+                  setDetails({
+                    visible: 2,
+                    ...module,
+                    order: { title: module.orderTitle }
+                  });
+                }}
+              >
+                <Text className="font-pbold text-[18px] mb-2">{module.orderTitle}</Text>
+                <Text className="font-pregular text-[16px]">{module.title}</Text>
+              </TouchableOpacity>
+            ))
+          ) : (
+            <View className="bg-white p-8 rounded-xl mb-4">
+              <Text className="font-pregular text-[18px] text-center text-gray-500">Подходящих позиций мебели нет</Text>
+            </View>
+          )}
 
           <View className="h-[100px]" />
         </ScrollView>
@@ -1457,6 +1465,7 @@ const Home = () => {
             }
           >
             <View className="flex flex-row justify-between">
+              <Text>{user?.name}</Text>
               <Text className="font-pbold text-[22px]">
                 Баланс: {orders.reduce((total, order) => {
                   // Sum all payments from this order

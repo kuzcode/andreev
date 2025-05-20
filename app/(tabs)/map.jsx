@@ -170,12 +170,12 @@ const Map = () => {
       // Пропускаем архивные
       if (model.archived) return false;
 
-      // Проверяем условие: bg === 3 ИЛИ (bg === 0 И первые 4 иконки имеют статус 2)
+      // Проверяем условие: bg === 3 ИЛИ (bg === 0 И первые 4 иконки имеют статус 1)
       if (model.bg === 3) return true;
 
       if (model.bg === 0) {
         // Проверяем, что первые 4 иконки имеют статус 2
-        const firstFourIconsAreTwo = model.icons?.slice(0, 4).every(icon => icon === 2);
+        const firstFourIconsAreTwo = model.icons?.slice(0, 4).every(icon => icon === 1);
         return firstFourIconsAreTwo;
       }
 

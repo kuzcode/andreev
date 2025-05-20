@@ -90,7 +90,7 @@ const SignUp = () => {
               У вас есть аккаунт?
             </Text>
             <Link
-              href="/home"
+              href="/sign-in"
               className="text-lg font-pregular text-[#3c87ff]"
             >
               Войдите

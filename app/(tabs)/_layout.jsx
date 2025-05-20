@@ -5,6 +5,7 @@ import { Image, Text, View } from "react-native";
 import { icons } from "../../constants";
 import { Loader } from "../../components";
 import { useGlobalContext } from "../../context/GlobalProvider";
+import { useDetails } from "../../context/DetailsProvider";
 
 const TabIcon = ({ icon, color, name, focused }) => {
   return (
@@ -21,6 +22,7 @@ const TabIcon = ({ icon, color, name, focused }) => {
 
 const TabLayout = () => {
   const { loading, isLogged } = useGlobalContext();
+  const { details } = useDetails();
   //if (!loading && !isLogged) return <Redirect href="/sign-up" />;
 
   return (
@@ -35,6 +37,7 @@ const TabLayout = () => {
             borderTopWidth: 1,
             borderTopColor: "#fff",
             height: 70,
+            display: details.visible === 1 ? 'none' : 'flex',
           },
         }}
       >

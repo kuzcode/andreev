@@ -33,7 +33,7 @@ const Welcome = () => {
 
 
           <CustomButton
-            title="войти как администратор"
+            title="войти"
             handlePress={() => router.push("/home")}
             containerStyles="w-full mt-7"
           />

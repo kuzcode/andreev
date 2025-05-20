@@ -3,6 +3,7 @@ import { useFonts } from 'expo-font';
 import { Stack, router } from "expo-router";
 import * as SplashScreen from 'expo-splash-screen';
 import GlobalProvider from "../context/GlobalProvider";
+import { DetailsProvider } from "../context/DetailsProvider";
 
 const RootLayout = () => {
   const [fontsLoaded, error] = useFonts({
@@ -25,12 +26,14 @@ const RootLayout = () => {
 
   return (
     <GlobalProvider>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false, navigationBarColor: 'black' }} />
-        <Stack.Screen name="(auth)" options={{ headerShown: false, navigationBarColor: '#111' }} />
-        <Stack.Screen name="additional" options={{ headerShown: false, navigationBarColor: 'black' }} />
-        <Stack.Screen name="index" options={{ headerShown: false, navigationBarColor: '#111' }} />
-      </Stack>
+      <DetailsProvider>
+        <Stack>
+          <Stack.Screen name="(tabs)" options={{ headerShown: false, navigationBarColor: 'black' }} />
+          <Stack.Screen name="(auth)" options={{ headerShown: false, navigationBarColor: '#111' }} />
+          <Stack.Screen name="additional" options={{ headerShown: false, navigationBarColor: 'black' }} />
+          <Stack.Screen name="index" options={{ headerShown: false, navigationBarColor: '#111' }} />
+        </Stack>
+      </DetailsProvider>
     </GlobalProvider>
   );
 };
