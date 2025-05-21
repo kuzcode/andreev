@@ -15,7 +15,8 @@ const Create = () => {
       name: '',
       phone: ''
     },
-    modules: []
+    modules: [],
+    toEnd: 0,
   });
 
   // Функция для получения максимального номера модели
@@ -69,13 +70,30 @@ const Create = () => {
         </View>
 
         <View>
-          <FormField
-            title='Название'
-            max={100}
-            value={form.title}
-            otherStyles={'mt-4'}
-            handleChangeText={(e) => setForm({ ...form, title: e })}
-          />
+          <View className="flex-row items-end">
+            <FormField
+              title='Название'
+              max={100}
+              value={form.title}
+              otherStyles={'mt-4 flex-1 mr-4'}
+              handleChangeText={(e) => setForm({ ...form, title: e })}
+            />
+
+            <TextInput
+              className="mt-2 border-2 border-[#ccd6dd] py-3 px-4 rounded-xl text-center text-[20px] font-pbold"
+              value={String(form.toEnd)}
+              onChangeText={(e) => {
+                const days = Number(e);
+                const endDate = new Date();
+                endDate.setDate(endDate.getDate() + days);
+                setForm({
+                  ...form,
+                  toEnd: days,
+                  endDate: endDate.toISOString()
+                })
+              }}
+            />
+          </View>
 
           <View className="flex-row items-center my-4">
             <Text className="font-pregular text-[20px] mr-2">Заказчик</Text>
@@ -105,60 +123,6 @@ const Create = () => {
 
             <TouchableOpacity
               onPress={() => { Linking.openURL(`tel:${form?.customer?.phone}`); }}
-            >
-              <Image
-                source={icons.phone}
-                className="w-8 h-8 ml-2"
-              />
-            </TouchableOpacity>
-          </View>
-
-          <View className="flex-row items-center" style={{ height: 60 }}>
-            <Text className="font-pregular text-[20px] mr-2">Дизайнер</Text>
-
-            <View className="flex-1 border-2 border-[#ccd6dd] rounded-xl">
-              <RNPickerSelect
-                onValueChange={(value) => setForm({ ...form, designer: value })}
-                items={[
-                  { label: "Вася", value: "Вася" },
-                  { label: "Никита", value: "Никита" },
-                ]}
-                style={{
-                  inputIOS: { paddingVertical: 10, width: '100%' },
-                  inputAndroid: { width: '100%' }
-                }}
-              />
-            </View>
-
-            <TouchableOpacity
-              onPress={() => { Linking.openURL(`tel:${phoneNumber}`); }}
-            >
-              <Image
-                source={icons.phone}
-                className="w-8 h-8 ml-2"
-              />
-            </TouchableOpacity>
-          </View>
-
-          <View className="flex-row items-center" style={{ height: 60 }}>
-            <Text className="font-pregular text-[20px] mr-2">Прораб</Text>
-
-            <View className="flex-1 border-2 border-[#ccd6dd] rounded-xl">
-              <RNPickerSelect
-                onValueChange={(value) => setForm({ ...form, prorab: value })}
-                items={[
-                  { label: "Вася", value: "Вася" },
-                  { label: "Никита", value: "Никита" },
-                ]}
-                style={{
-                  inputIOS: { paddingVertical: 10, width: '100%' },
-                  inputAndroid: { width: '100%' }
-                }}
-              />
-            </View>
-
-            <TouchableOpacity
-              onPress={() => { Linking.openURL(`tel:${phoneNumber}`); }}
             >
               <Image
                 source={icons.phone}

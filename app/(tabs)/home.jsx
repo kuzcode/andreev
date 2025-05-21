@@ -1,6 +1,6 @@
 import { ScrollView, Text, TouchableOpacity, View, Linking, Image, StyleSheet, TextInput, RefreshControl, Alert, Dimensions } from "react-native";
 import { icons } from "../../constants";
-import { getMasters, getOrders, updateModel, updateOrder, updateTracker, updateUser, getPeople, getMasterModels } from "../../lib/appwrite";
+import { getMasters, getUserByEmail, getOrders, updateModel, updateOrder, updateTracker, updateUser, getPeople, getMasterModels, getUserById } from "../../lib/appwrite";
 import { useEffect, useState, useRef } from "react";
 import RNPickerSelect from "react-native-picker-select";
 import { FormField } from "../../components";
@@ -24,7 +24,28 @@ const Home = () => {
   const horizontalScrollRef = useRef(null);
   const width = Dimensions.get('window').width;
   const global = useGlobalContext();
-  const [user, setUser] = useState(global.user);
+  const [session, setSession] = useState(global.user);
+  const [user, setUser] = useState({
+    role: 1,
+  });
+
+  useEffect(() => {
+    console.log('Current session: ', session);
+    if (session) {
+      const fetchUserData = async () => {
+        const userData = await getUserByEmail(session.email);
+        if (userData && userData !== undefined) {
+          setUser(userData);
+        } else {
+          console.error('User not found for email: ', session.email);
+        }
+      };
+
+      fetchUserData();
+    }
+  }, [session]);
+
+  console.log('user: ', user)
 
   const bgs = [
     { title: 'Кр.', bg: '#b61900' },
@@ -98,7 +119,6 @@ const Home = () => {
       try {
         const data = await getOrders();
         if (!data || data.length === 0) {
-          console.log('Нет доступных заказов');
           setOrders([]);
           return;
         }
@@ -108,8 +128,6 @@ const Home = () => {
           const today = new Date();
           const timeDiff = endDate - today;
           const daysDiff = Math.ceil(timeDiff / (1000 * 3600 * 24));
-
-          console.log('Загруженный заказ:', JSON.stringify(order, null, 2));
 
           return {
             ...order,
@@ -124,7 +142,6 @@ const Home = () => {
           };
         }).sort((a, b) => a.toEnd - b.toEnd);
 
-        console.log('Обработанные заказы:', JSON.stringify(updatedOrders, null, 2));
         setOrders(updatedOrders);
       }
       catch (e) {
@@ -145,15 +162,11 @@ const Home = () => {
           getMasters(2),
           getMasters(3)
         ]);
-        console.log('Загруженные дизайнеры:', designersData);
-        console.log('Загруженные прорабы:', prorabsData);
 
         // Проверяем структуру данных
         if (designersData && designersData.length > 0) {
-          console.log('Пример данных дизайнера:', designersData[0]);
         }
         if (prorabsData && prorabsData.length > 0) {
-          console.log('Пример данных прораба:', prorabsData[0]);
         }
 
         setMasters(mastersData);
@@ -167,12 +180,6 @@ const Home = () => {
 
     getMastersFunc();
   }, [toRefresh]);
-
-  // Добавим эффект для отслеживания изменений в списках
-  useEffect(() => {
-    console.log('Текущие дизайнеры в состоянии:', designers);
-    console.log('Текущие прорабы в состоянии:', prorabs);
-  }, [designers, prorabs]);
 
   const handleIconUpdate = (orderIndex, modIndex, iconIndex, newStatus, order) => {
     const newIcons = [...orders[orderIndex].models[modIndex].icons];
@@ -1416,37 +1423,49 @@ const Home = () => {
             }
           >
             <View className="py-10 px-4">
-              <View className="flex flex-row justify-between mb-2">
-                <Text className="font-pbold text-[22px]">Сотрудники</Text>
-              </View>
-
-              {people.map(person =>
-                <TouchableOpacity
-                  className="p-4 bg-white my-2 rounded-2xl"
-                  key={person.$id}
-                  onPress={async () => {
-                    try {
-                      // Загружаем модели мастера
-                      const masterModels = await getMasterModels(person.$id, false);
-
-                      // Устанавливаем детали с загруженными моделями
-                      setDetails({
-                        visible: 4,
-                        activeTab: 'active',
-                        ...person,
-                        models: masterModels
-                      });
-                    } catch (error) {
-                      console.error('Ошибка при загрузке моделей мастера:', error);
-                      Alert.alert('Ошибка', 'Не удалось загрузить модели мастера');
-                    }
-                  }}
-                >
-                  <View className="flex flex-row justify-between">
-                    <Text className="font-pbold text-[18px]">{person.name} <Text className="text-gray-500 font-pregular">({person.modelsCount})</Text></Text>
-                    <Text className="font-pbold text-[18px]">{person.balance}₽</Text>
+              {user.role === 0 ? (
+                <View>
+                  <View className="flex flex-row justify-between mb-2">
+                    <Text className="font-pbold text-[22px]">Сотрудники</Text>
                   </View>
-                </TouchableOpacity>
+
+                  {people.map(person =>
+                    <TouchableOpacity
+                      className="p-4 bg-white my-2 rounded-2xl"
+                      key={person.$id}
+                      onPress={async () => {
+                        try {
+                          // Загружаем модели мастера
+                          const masterModels = await getMasterModels(person.$id, false);
+
+                          // Устанавливаем детали с загруженными моделями
+                          setDetails({
+                            visible: 4,
+                            activeTab: 'active',
+                            ...person,
+                            models: masterModels
+                          });
+                        } catch (error) {
+                          console.error('Ошибка при загрузке моделей мастера:', error);
+                          Alert.alert('Ошибка', 'Не удалось загрузить модели мастера');
+                        }
+                      }}
+                    >
+                      <View className="flex flex-row justify-between">
+                        <Text className="font-pbold text-[18px]">{person.name} <Text className="text-gray-500 font-pregular">({person.modelsCount})</Text></Text>
+                        <Text className="font-pbold text-[18px]">{person.balance}₽</Text>
+                      </View>
+                    </TouchableOpacity>
+                  )}
+                </View>
+              ) : (
+                <View>
+                  <View className="flex flex-row justify-between mb-2">
+                    <Text className="font-pbold text-[22px] text-center w-full mt-10">{user?.name}</Text>
+                  </View>
+
+                  <Text className="font-pbold text-[22px] text-center">Баланс: {user?.balance}₽</Text>
+                </View>
               )}
             </View>
           </ScrollView>
@@ -1464,29 +1483,30 @@ const Home = () => {
               />
             }
           >
-            <View className="flex flex-row justify-between">
-              <Text>{user?.name}</Text>
-              <Text className="font-pbold text-[22px]">
-                Баланс: {orders.reduce((total, order) => {
-                  // Sum all payments from this order
-                  const orderPayments = order.payments?.reduce((sum, payment) => sum + (payment.amount || 0), 0) || 0;
+            {user.role === 0 && (
+              <View className="flex flex-row justify-between">
+                <Text className="font-pbold text-[22px]">
+                  Баланс: {orders.reduce((total, order) => {
+                    // Sum all payments from this order
+                    const orderPayments = order.payments?.reduce((sum, payment) => sum + (payment.amount || 0), 0) || 0;
 
-                  // Sum all expenses from this order's models
-                  const orderExpenses = order.models?.reduce((sum, model) => {
-                    // Sum model charges
-                    const modelCharges = model.charges?.reduce((chargeSum, charge) => chargeSum + (Number(charge.cost) || 0), 0) || 0;
+                    // Sum all expenses from this order's models
+                    const orderExpenses = order.models?.reduce((sum, model) => {
+                      // Sum model charges
+                      const modelCharges = model.charges?.reduce((chargeSum, charge) => chargeSum + (Number(charge.cost) || 0), 0) || 0;
 
-                    // Sum master payments ONLY for archived models
-                    const masterPayments = model.archived ?
-                      (model.masters?.reduce((masterSum, master) => masterSum + (Number(master.cost) || 0), 0) || 0) : 0;
+                      // Sum master payments ONLY for archived models
+                      const masterPayments = model.archived ?
+                        (model.masters?.reduce((masterSum, master) => masterSum + (Number(master.cost) || 0), 0) || 0) : 0;
 
-                    return sum + modelCharges + masterPayments;
-                  }, 0) || 0;
+                      return sum + modelCharges + masterPayments;
+                    }, 0) || 0;
 
-                  return total + orderPayments - orderExpenses;
-                }, 0)}₽
-              </Text>
-            </View>
+                    return total + orderPayments - orderExpenses;
+                  }, 0)}₽
+                </Text>
+              </View>
+            )}
 
             {orders.map((order, orderIndex) => {
               const activeModels = (order.models || []).filter(module => {
@@ -1512,12 +1532,14 @@ const Home = () => {
                   <View className="flex flex-row justify-between mb-2">
                     <Text className="font-pbold text-[22px]">{order.title}</Text>
                     <View className="flex flex-row items-center">
-                      <TouchableOpacity onPress={() => { Linking.openURL(`https://wa.me/0${order.customer.phone}`) }}>
-                        <Image
-                          source={icons.whatsapp}
-                          className="w-7 h-7 mx-2"
-                        />
-                      </TouchableOpacity>
+                      {user.role === 0 && (
+                        <TouchableOpacity onPress={() => { Linking.openURL(`https://wa.me/0${order.customer.phone}`) }}>
+                          <Image
+                            source={icons.whatsapp}
+                            className="w-7 h-7 mx-2"
+                          />
+                        </TouchableOpacity>
+                      )}
                       <TouchableOpacity onPress={() => {
                         const updatedOrders = [...orders];
                         updatedOrders[orderIndex].visible = !order.visible;

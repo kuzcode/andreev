@@ -34,7 +34,7 @@ const Welcome = () => {
 
           <CustomButton
             title="войти"
-            handlePress={() => router.push("/home")}
+            handlePress={() => router.push("/sign-in")}
             containerStyles="w-full mt-7"
           />
         </View>
